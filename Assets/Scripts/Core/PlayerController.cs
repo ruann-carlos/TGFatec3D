@@ -10,32 +10,42 @@ namespace TG.Core
     public class PlayerController : MonoBehaviour
     {
         InputSheet playerInput;
-        Vector3 inputVector;
+        Vector2 inputVector;
+        bool runPressed;
+        bool movementPressed;
         
         private void Awake() {
             playerInput = new InputSheet();
+            playerInput.Player.Move.performed += VerifyRunning;
+            playerInput.Player.Run.performed += context => runPressed = context.ReadValueAsButton();
+            playerInput.Player.Move.canceled += context => {
+                movementPressed = false;
+                inputVector = Vector2.zero;
+            };
         }
 
         private void OnEnable() {
             playerInput.Player.Enable();
-            playerInput.Player.Move.performed += MovementPerformed;
+            
         }
-
 
         private void OnDisable() {
             playerInput.Player.Disable();
-            playerInput.Player.Move.performed -= MovementPerformed;
         }
         
         private void FixedUpdate() {
             
-            inputVector = playerInput.Player.Move.ReadValue<Vector3>();
-            GetComponent<Mover>().Move(inputVector);
         }
 
-        private void MovementPerformed(InputAction.CallbackContext context)
+        private void VerifyRunning(InputAction.CallbackContext context){
+            inputVector = playerInput.Player.Move.ReadValue<Vector2>();
+            movementPressed = inputVector.x != 0 || inputVector.y != 0;
+            MovementPerformed();
+        }
+        private void MovementPerformed()
         {
-            GetComponent<Mover>().Move(inputVector);
+                GetComponent<Mover>().Move(movementPressed, runPressed);
+                GetComponent<Mover>().RotateCharacter(inputVector);
         }
 
     }

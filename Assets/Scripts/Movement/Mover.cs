@@ -8,19 +8,46 @@ namespace TG.Movement
     {
         [SerializeField] private float movementSpeed = 5;
         Rigidbody rigidBody;
+        Animator animator;
+        int isWalkingHash;
+        int isRunningHash;
 
         private void Start() {
             rigidBody = GetComponent<Rigidbody>();
+            animator  = GetComponent<Animator>();
+            isWalkingHash = Animator.StringToHash("walking");
+            isRunningHash = Animator.StringToHash("running");
         }
 
-        void Update()
-        {
+        public void Move(bool movementPressed, bool RunPressed){
+            
+            bool _isRunning = animator.GetBool(isRunningHash);
+            bool _isWalking = animator.GetBool(isWalkingHash);
+
+            if(movementPressed && !_isWalking){
+                animator.SetBool(isWalkingHash, true);                
+            }
+
+            if(!movementPressed && _isWalking){
+                animator.SetBool(isWalkingHash,false);
+            }
+
+            if((movementPressed && RunPressed) && !_isRunning){
+                animator.SetBool(isRunningHash, true);
+            }
+
+            if((!movementPressed || !RunPressed) && _isRunning){
+                animator.SetBool(isRunningHash, false);
+            }
+
+        }
+
+        public void RotateCharacter(Vector2 inputVector){
+            Vector3 currentPosition = transform.position;
+            Vector3 newPosition = new Vector3(inputVector.x, 0, inputVector.y);
+            Vector3 lookPosition = currentPosition + newPosition;
+            transform.LookAt(lookPosition);
+        }
         
-        }
-
-        public void Move(Vector3 direction){
-            print(direction.normalized);
-            rigidBody.AddForce(new Vector3(direction.x, 0, direction.y) * movementSpeed, ForceMode.Force);
-        }
     }
 }

@@ -341,7 +341,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 0.86153847, y: 1}
+    m_SensorSize: {x: 0.9713467, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -582,7 +582,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 114100003275648494, guid: f4fb44b87fd7a654ea228296f3a683ed, type: 3}
       propertyPath: movementSpeed
-      value: 200
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 360706137832481320, guid: f4fb44b87fd7a654ea228296f3a683ed, type: 3}
       propertyPath: m_Camera
