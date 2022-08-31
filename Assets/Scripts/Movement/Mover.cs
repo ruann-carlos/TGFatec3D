@@ -6,47 +6,40 @@ namespace TG.Movement
 {
     public class Mover : MonoBehaviour
     {
-        [SerializeField] private float movementSpeed = 5;
-        Rigidbody rigidBody;
-        Animator animator;
-        int isWalkingHash;
-        int isRunningHash;
+        [SerializeField] float playerWalkingSpeed = 3;
+        [SerializeField] float playerRunningSpeed = 5;
+        float rotationFactor = 15;
 
-        private void Start() {
-            rigidBody = GetComponent<Rigidbody>();
-            animator  = GetComponent<Animator>();
-            isWalkingHash = Animator.StringToHash("walking");
-            isRunningHash = Animator.StringToHash("running");
-        }
-
-        public void Move(bool movementPressed, bool RunPressed){
+        public void MoveCharacterRelativeToCamera(Vector3 inputVector, bool isRunning){
             
-            bool _isRunning = animator.GetBool(isRunningHash);
-            bool _isWalking = animator.GetBool(isWalkingHash);
+            Vector3 forwardCamera = Camera.main.transform.forward;
+            Vector3 rightCamera = Camera.main.transform.right;
+            forwardCamera.y = 0;
+            rightCamera.y = 0;
+            forwardCamera = forwardCamera.normalized;
+            rightCamera = rightCamera.normalized;
 
-            if(movementPressed && !_isWalking){
-                animator.SetBool(isWalkingHash, true);                
-            }
-
-            if(!movementPressed && _isWalking){
-                animator.SetBool(isWalkingHash,false);
-            }
-
-            if((movementPressed && RunPressed) && !_isRunning){
-                animator.SetBool(isRunningHash, true);
-            }
-
-            if((!movementPressed || !RunPressed) && _isRunning){
-                animator.SetBool(isRunningHash, false);
+            Vector3 forwardRelativeVertical = inputVector.z * forwardCamera;
+            Vector3 rightRelativeHorizontal = inputVector.x * rightCamera;
+            Vector3 cameraRelativeDirection = forwardRelativeVertical + rightRelativeHorizontal;
+            if(isRunning){
+                this.transform.Translate(cameraRelativeDirection * Time.deltaTime * playerRunningSpeed, Space.World);
+            }else{
+                this.transform.Translate(cameraRelativeDirection * Time.deltaTime * playerWalkingSpeed, Space.World);
             }
 
         }
 
-        public void RotateCharacter(Vector2 inputVector){
-            Vector3 currentPosition = transform.position;
-            Vector3 newPosition = new Vector3(inputVector.x, 0, inputVector.y);
-            Vector3 lookPosition = currentPosition + newPosition;
-            transform.LookAt(lookPosition);
+        public void RotateCharacter(Vector3 inputVector, bool isMoving){
+            Vector3 angleToLook;
+            angleToLook.x = inputVector.x;
+            angleToLook.y = 0;
+            angleToLook.z = inputVector.z;
+            Quaternion currentRotation = transform.rotation;
+            if(isMoving){
+                Quaternion targetRotation = Quaternion.LookRotation(angleToLook);
+                transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, rotationFactor * Time.deltaTime);
+            }
         }
         
     }
