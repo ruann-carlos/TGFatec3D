@@ -31,10 +31,16 @@ namespace TG.Movement
         }
 
         public void RotateCharacter(Vector3 inputVector, bool isMoving){
-            Vector3 angleToLook;
-            angleToLook.x = inputVector.x;
-            angleToLook.y = 0;
-            angleToLook.z = inputVector.z;
+            Vector3 forwardCamera = Camera.main.transform.forward;
+            Vector3 rightCamera = Camera.main.transform.right;
+            forwardCamera.y = 0;
+            rightCamera.y = 0;
+            forwardCamera = forwardCamera.normalized;
+            rightCamera = rightCamera.normalized;
+
+            Vector3 forwardRelativeVertical = inputVector.z * forwardCamera;
+            Vector3 rightRelativeHorizontal = inputVector.x * rightCamera;
+            Vector3 angleToLook = forwardRelativeVertical + rightRelativeHorizontal;
             Quaternion currentRotation = transform.rotation;
             if(isMoving){
                 Quaternion targetRotation = Quaternion.LookRotation(angleToLook);
