@@ -4,6 +4,7 @@ using UnityEngine;
 using TG.Movement;
 using UnityEngine.InputSystem;
 using System;
+using TG.Combat;
 
 namespace TG.Core
 {
@@ -14,7 +15,6 @@ namespace TG.Core
         Vector3 characterDirection;
         Mover playerMover;
         Animator animator;
-
         bool runPressed;
         bool movementPressed;
         
@@ -26,6 +26,7 @@ namespace TG.Core
             playerInput.Player.Move.performed += OnMovementPerformed;
             playerInput.Player.Move.canceled += OnMovementPerformed;
             playerInput.Player.Run.performed += OnRunPerformed;
+            playerInput.Player.Fire.performed += OnAttackPerformed;
         }
 
         private void OnEnable() {
@@ -51,6 +52,10 @@ namespace TG.Core
 
         private void OnRunPerformed(InputAction.CallbackContext context){
             runPressed = context.ReadValueAsButton();
+        }
+        
+        private void OnAttackPerformed(InputAction.CallbackContext context){
+            GetComponent<Fighter>().SetAttackAnimation();
         }
         private void MovementPerformed()
         {
