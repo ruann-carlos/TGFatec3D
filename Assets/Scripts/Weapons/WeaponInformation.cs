@@ -1,26 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using TG.Combat;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 namespace TG.Weapons
 {
     public class WeaponInformation : MonoBehaviour
     {
         [SerializeField] public float weaponDamage;
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+    
         private void OnTriggerEnter(Collider other) {
-            print("colidiu");
-            other.GetComponent<Animator>().SetTrigger("damage");
+            GetComponentInParent<Fighter>().Hit(weaponDamage, other);
         }
     }
 }
