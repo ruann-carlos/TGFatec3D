@@ -4,6 +4,7 @@ using UnityEngine;
 using TG.Movement;
 using UnityEngine.InputSystem;
 using System;
+using TG.Combat;
 
 namespace TG.Core
 {
@@ -14,7 +15,6 @@ namespace TG.Core
         Vector3 characterDirection;
         Mover playerMover;
         Animator animator;
-
         bool runPressed;
         bool movementPressed;
         
@@ -26,6 +26,9 @@ namespace TG.Core
             playerInput.Player.Move.performed += OnMovementPerformed;
             playerInput.Player.Move.canceled += OnMovementPerformed;
             playerInput.Player.Run.performed += OnRunPerformed;
+            playerInput.Player.Fire.performed += OnAttackPerformed;
+            playerInput.Player.Defend.started += OnBlockPressed;
+            playerInput.Player.Defend.canceled += OnBlockReleased;
         }
 
         private void OnEnable() {
@@ -52,10 +55,23 @@ namespace TG.Core
         private void OnRunPerformed(InputAction.CallbackContext context){
             runPressed = context.ReadValueAsButton();
         }
+        
+        private void OnAttackPerformed(InputAction.CallbackContext context){
+                GetComponent<Fighter>().SetAttackAnimation();
+        }
+
         private void MovementPerformed()
         {
-                playerMover.MoveCharacterRelativeToCamera(characterDirection, runPressed);
-                playerMover.RotateCharacter(characterDirection, movementPressed);
+            playerMover.MoveCharacterRelativeToCamera(characterDirection, runPressed);
+            playerMover.RotateCharacter(characterDirection, movementPressed);
+        }
+
+        private void OnBlockPressed(InputAction.CallbackContext context){
+            GetComponent<Fighter>().SetDefenseAnimation(true);
+        }
+
+        private void OnBlockReleased(InputAction.CallbackContext context){
+            GetComponent<Fighter>().SetDefenseAnimation(false);
         }
 
         public void HandleAnimation(){
